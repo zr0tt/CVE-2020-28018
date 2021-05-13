@@ -1,0 +1,3 @@
+Tests: basic
+Depends: exim4, swaks, libnet-ssleay-perl
+Restrictions: allow-stderr

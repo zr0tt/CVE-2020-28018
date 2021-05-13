@@ -1,0 +1,51 @@
+#!/bin/sh
+
+set -e
+
+runandshow() {
+	count=0
+	printf '===============\n%s: running ' $0
+	for i in "$@" ; do
+		printf "argv[%i]=[%s] " "$count" "$i"
+		count=$(($count+1))
+	done
+	echo
+	"$@"
+}
+
+shouldfail() {
+if runandshow "$@"; then
+	echo ... should have failed
+	exit 1
+else
+	:
+fi
+}
+
+exim=/usr/sbin/exim4
+
+
+runandshow $exim -bV
+runandshow $exim -bt postmaster@localhost
+
+# Since example.com is not a local domain delivery should fail with the
+# default dc_eximconfig_configtype=local
+shouldfail $exim -bt invalid@example.com
+runandshow $exim -be \
+	'${lookup{exim4.conf.template}dsearch{/etc/exim4}{$value}fail}'
+rc="$($exim -be \
+	'${lookup{exim4.conf.template}dsearch{/etc/exim4}{$value}fail}')"
+if [ "$rc" != "exim4.conf.template" ]; then
+	echo wrong expansion result $rc
+	false
+fi
+
+runandshow swaks -s localhost -tlso -q ehlo
+runandshow swaks -s localhost -tlso -f root@localhost -t postmaster@localhost \
+       -q rcpt
+shouldfail swaks -s localhost -tlso -f root@localhost \
+	-t postmaster@localhost \
+	--h-From 'From: Invalid Syntax <root@localhost'
+shouldfail swaks -s localhost -tlso -f root@localhost \
+	-t postmaster@localhost \
+	--body `dirname $0`/long-header.msg

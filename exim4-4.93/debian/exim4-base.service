@@ -1,0 +1,14 @@
+[Unit]
+Description=exim4-base housekeeping
+Documentation=man:exim4(8)
+ConditionACPower=true
+Before=logrotate.service
+
+[Service]
+Type=oneshot
+ExecStart=/etc/cron.daily/exim4-base systemd-timer
+
+# performance options
+Nice=19
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

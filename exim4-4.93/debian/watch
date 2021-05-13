@@ -1,0 +1,3 @@
+version=3
+opts=pgpsigurlmangle=s/$/.asc/,uversionmangle=s/[_-]/~/g \
+https://downloads.exim.org/exim4/exim-(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))

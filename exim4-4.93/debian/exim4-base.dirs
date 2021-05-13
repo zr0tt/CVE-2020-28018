@@ -1,0 +1,5 @@
+/etc/cron.daily
+/etc/logrotate.d
+/usr/sbin
+/usr/share/doc/exim4-base/examples
+/usr/share/man/man8
